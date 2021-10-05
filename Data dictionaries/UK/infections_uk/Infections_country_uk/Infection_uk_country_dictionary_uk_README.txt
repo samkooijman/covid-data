@@ -9,7 +9,7 @@ Data sources:
 General description:
 The dataset contains the amount of Covid-19 positive tests on a specific date in a respective country in the UK.
 There are 2358 instances.
-There seems to be not biased as this is a governmental data and all data seems consistent.
+There seems to be no bias in this dataset as this is a governmental data and all data seems consistent with each other.
 The dataset is rather limited to only positive tests on a given date and a country in the UK. The countries are fairly big so that can be a struggle in the data preparation phase. Espcially England is pretty big, but another dataset is available to dinstinguish the regions of England. The number of postive tests will act as a dependent variable with regards to the other variables discussed in the business understanding.
 
 Variables
