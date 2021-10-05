@@ -7,11 +7,11 @@ Data sources:
 --------------------------------------------------
 General description:
 The dataset contains cumulative data regarding the percentage of antibodies and vaccinations across the entire UK population.A regional and country distinction is made in the dataset. 
-The dataset regards adults who have received 1 dose or more as vaccinated.
+The dataset regards adults (16+) who have received 1 dose or more as vaccinated.
 Sample groups were taken in blood tests which represents the regional population in the UK. Standard population weighting is used to properly assign conclusions to the population.
 Bayesian analysis is used so that credible intervals can tell the dataset is reliable. So there seems to be no bias. Additionaly, it is governmental dat, so a bias would be highly unlikely.
 The dataset records the data in a time-series week by week, starting 07 December 2020. The last update of the dataset is on 29 August 2021. Therefore, there are 37 instances (weeks).
-The population of the dataset is 16 years and over.
+The people within the population of the dataset are 16 years and over.
 Different age groups are analysed per country in the dataset.
 The instances of the dataset end on the last week of August, which make the data possible incomplete to the datasets of the other countries.
 The dataset and the number of vaccinations will act as a dependent variable to combine with all the other independent variables discussed in the business understanding.
