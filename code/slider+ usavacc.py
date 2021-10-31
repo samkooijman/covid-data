@@ -12,7 +12,7 @@ app = dash.Dash()
 
 df = pd.read_csv("full_usa_vacc.csv")
 
-daterange = pd.date_range(start='2021',end='2022',freq='D')
+daterange = pd.date_range(start='2021',end='2021/10/05',freq='D')
 
 df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
 df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y').dt.strftime('%Y/%m/%d')
