@@ -12,15 +12,16 @@ app = dash.Dash()
 
 df = pd.read_csv("full_usa_vacc.csv")
 
-daterange = pd.date_range(start='2021',end='2021/10/05',freq='D')
 
 df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
 df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y').dt.strftime('%Y/%m/%d')
 
 
-df.sort_values(by='date')
+df = df.sort_values(by='date', ascending=True)
+begin = df.iloc[3, 1]
+end = df.iloc[-1, 1]
+daterange = pd.date_range(start='2020/12/15', end=end, freq='D')
 
-print(df['date'])
 
 #print(time.mktime(df['date']))
 
@@ -57,7 +58,7 @@ app.layout = html.Div(children=[
                 id='year_slider',
                 min = unixTimeMillis(daterange.min()),
                 max = unixTimeMillis(daterange.max()),
-                value = unixTimeMillis(daterange.min()),
+                value = unixTimeMillis(daterange.max()),
                          #unixTimeMillis(daterange.max())],
                 marks=getMarks(daterange.min(),
                             daterange.max()),
