@@ -1,5 +1,6 @@
 import dash
 import pandas as pd
+import numpy as np
 import plotly.express as px  # (version 4.7.0 or higher)
 from dash import Dash, dcc, html, Input, Output  # pip install dash (version 2.0.0 or higher)
 import datetime as dt
@@ -16,11 +17,13 @@ df = pd.read_csv("full_usa_vacc.csv")
 df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
 df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y').dt.strftime('%Y/%m/%d')
 
+df['series_complete_pop_pct'] = df['series_complete_pop_pct'].replace('', np.nan)
+df = df.dropna(axis=0, subset=['series_complete_pop_pct'])
 
 df = df.sort_values(by='date', ascending=True)
-begin = df.iloc[3, 1]
+begin = df.iloc[1, 1]
 end = df.iloc[-1, 1]
-daterange = pd.date_range(start='2020/12/15', end=end, freq='D')
+daterange = pd.date_range(start='2021', end=end, freq='D', closed='right')
 
 
 #print(time.mktime(df['date']))
