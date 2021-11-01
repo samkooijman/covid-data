@@ -1,0 +1,12 @@
+URL DATABASE SENTIMENT
+https://www.openicpsr.org/openicpsr/project/120321/version/V10/view?path=/openicpsr/120321/fcr:versions/V10/Twitter-COVID-dataset---Sep2021&type=folder
+COMMENT: Hou er wel rekening mee dat je  moet inloggen en 'I AGREE' moet aanklikken bij de TERMS OF USE. IK hoor het graag als dit te lastig is en op een andere manier moet!
+
+URL CSV DENMARK 
+https://www.openicpsr.org/openicpsr/project/120321/version/V10/view?path=/openicpsr/120321/fcr:versions/V10/Twitter-COVID-dataset---Sep2021/tweetid_userid_keyword_sentiments_emotions_Denmark.csv.zip&type=file
+
+URL CSV USA
+https://www.openicpsr.org/openicpsr/project/120321/version/V10/view?path=/openicpsr/120321/fcr:versions/V10/Twitter-COVID-dataset---Sep2021/tweetid_userid_keyword_sentiments_emotions_United-States.csv.zip&type=file
+
+URL CSV UK
+https://www.openicpsr.org/openicpsr/project/120321/version/V10/view?path=/openicpsr/120321/fcr:versions/V10/Twitter-COVID-dataset---Sep2021/tweetid_userid_keyword_sentiments_emotions_United-Kingdom.csv.zip&type=file
