@@ -1,8 +1,17 @@
 FROM python:3
 
-ENV PYTHONUNBUFFERED 1
-RUN mkdir /src
-WORKDIR /src
+RUN mkdir -p /usr/src/app
 
-ADD             ./requirements.txt ./
-RUN             python3 -m pip install -r requirements.txt
+WORKDIR /usr/src/app
+
+COPY requirements.txt /usr/src/app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . /usr/src/app
+COPY ./apps /usr/src/app/apps
+
+ENV PORT 8050
+
+EXPOSE $PORT
+
+CMD [ "python", "./index.py" ]
