@@ -1,12 +1,10 @@
-# Define which containers to create
 services:
 
-    dashboard:
-build: .
-container_name: dashboard
-command: python app.py
-volumes:
-- .:/src
-ports:
-- "8080:8080"
-    
+  dashboard:
+    build: .
+    container_name: Team04_Dashboard
+    command: python app.py
+    volumes:
+      - .:/src
+    ports:
+      - "8080:8080"
