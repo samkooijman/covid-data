@@ -19,7 +19,7 @@ df = pd.read_csv(DATA_PATH.joinpath("political_preference_usa.csv"))
 
 
 available_indicators = ['USA', 'UK','Denmark']
-df_uk = pd.read_csv(DATA_PATH.joinpath("political_pref_uk.csv"), error_bad_lines=False)
+df_uk = pd.read_csv(DATA_PATH.joinpath("political_pref_uk.csv"), delimiter=";")
 uk_regions = json.load(open(DATA_PATH.joinpath('uk_regions.json')))
 #Creating ID to map coordinates of the UK
 df_infec_uk = df_uk.replace(["East of England"], "East") #In the coordinates it was called East. I can change this later if necessary
@@ -30,7 +30,7 @@ for feature in uk_regions["features"]:
     feature["id"] = feature["properties"]["objectid"]
     state_id_map[feature["properties"]["rgn19nm"]] = feature["id"]
 
-#df_uk['id'] = df_uk['country_name'].apply(lambda x: state_id_map[x])
+#df_uk['id'] = df_uk['region_name'].apply(lambda x: state_id_map[x])
 
 
 df = df.replace({
@@ -147,9 +147,9 @@ def update_graph(xaxis_column_name):
     elif xaxis_column_name == 'UK':
            return px.choropleth(
             data_frame=df_uk,
-            locations='id',
+            locations='ons_id',
             geojson=uk_regions, #Conecting the coordinate file with the figure
-            color="cases_per_100k",
+            color="lab",
             scope='europe').update_geos(fitbounds='locations', visible=False)
     else: 
        return px.choropleth(
