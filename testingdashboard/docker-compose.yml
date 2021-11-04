@@ -1,0 +1,10 @@
+services:
+
+  dashboard:
+    build: .
+    container_name: Covid_Dashboard
+    command: python index.py
+    volumes:
+      - .:/src
+    ports:
+      - "8080:8080"
