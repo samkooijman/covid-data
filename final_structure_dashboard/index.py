@@ -2,12 +2,13 @@ from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
 
+
 # Connect to main app.py file
 from app import app
 from app import server
 
 # Connect to your app pages
-from apps import appje, Regression_USA
+from apps import appje, density, income
 
 
 app.layout = html.Div([
@@ -35,11 +36,11 @@ def display_page(pathname):
     elif pathname == '/apps/test':
         return "Test"
     elif pathname == '/apps/income':
-        return Regression_USA.layout
+        return income.layout
     elif pathname == '/apps/weather':
         return "weather"
     elif pathname == '/apps/density':
-        return "density"
+        return density.layout
     elif pathname == '/apps/measures':
         return "measures"
     elif pathname == '/apps/twitter':
