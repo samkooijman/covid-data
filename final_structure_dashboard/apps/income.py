@@ -316,6 +316,26 @@ def getMarks(start, end, Nth=100):
 
     return result
 
+
+
+x = denmark_income['income'].values
+y = denmark_income['vaccination_coverage'].values
+
+x_ready = x.reshape((-1,1))
+X_train, X_test, y_train, y_test = train_test_split(x_ready, y, test_size=0.2, random_state=0)
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+coef = regressor.coef_
+y_pred = regressor.predict(X_test)
+error = metrics.mean_absolute_error(y_test, y_pred)
+X_train = flatten_list(X_train)
+slope, intercept, r_value, p_value, std_err = stats.linregress(X_train, y_train)
+
+denmark_income['coef'] = [coef[0]] * len(denmark_income['region'])
+denmark_income['intersect'] = [regressor.intercept_] * len(denmark_income['region'])
+denmark_income['error_rate'] = [error] * len(denmark_income['region'])
+denmark_income['p_value'] = [p_value] * len(denmark_income['region'])
+
 dff3 = denmark_income.copy()
 
 scatterplot6 = px.scatter(
@@ -325,10 +345,10 @@ scatterplot6 = px.scatter(
         hover_data=['region'],
         text="region",
         height=550
-    )
+)
 
-# scatterplot6.add_trace(go.Scatter (x=dff3['income'], y= dff3['coef'] * dff3["income"] + dff3["intersect"], mode="lines"))
-# scatterplot6.update_traces(textposition='top center')
+scatterplot6.add_trace(go.Scatter (x=dff3['income'], y= dff3['coef'] * dff3["income"] + dff3["intersect"], mode="lines"))
+scatterplot6.update_traces(textposition='top center')
 
 layout = html.Div(children=[
     html.Br(),
