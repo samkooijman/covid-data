@@ -33,6 +33,8 @@ fig1.add_trace(go.Scatter(x=df4.tweet_timestamp, y= df4.anger, mode='lines', nam
 fig1.add_trace(go.Scatter(x=df4.tweet_timestamp, y= df4.happiness, mode='lines', name='Happiness'))
 fig1.add_trace(go.Scatter(x=df4.tweet_timestamp, y= df4.sadness, mode='lines', name='Sadness'))
 
+fig1.update_layout(xaxis_title='Date', yaxis_title='Sentiment score')
+
 
 figure(figsize=(12, 15), dpi=80)
 plt.plot(x1, y1)
