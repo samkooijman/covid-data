@@ -8,7 +8,7 @@ from app import app
 from app import server
 
 # Connect to your app pages
-from apps import appje, political_pref, income, density
+from apps import appje, political_pref, income, density, twitter
 SIDEBAR_STYLE = {
     "position": "fixed",
     "top": 0,
@@ -39,6 +39,7 @@ sidebar = html.Div(
                 dbc.NavLink("Political KPI", href='/apps/political_pref', active="exact"),
                 dbc.NavLink("Density KPI", href='/apps/density', active="exact"),
                 dbc.NavLink("Income KPI", href='/apps/income', active="exact"),
+                dbc.NavLink("Twitter Sentiment Analysis KPI", href='/apps/twitter', active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -70,6 +71,8 @@ def display_page(pathname):
         return density.layout
     elif pathname == '/apps/income':
         return income.layout
+    elif pathname == '/apps/twitter':
+        return twitter.layout
 
         
 
