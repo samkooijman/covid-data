@@ -12,14 +12,16 @@ import pandas as pd
 
 
 PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../datasets").resolve()
+DATA_PATH = PATH.joinpath("../src").resolve()
 
 #Reading all the files
-df = pd.read_csv(DATA_PATH.joinpath("political_preference_usa.csv"))
+#df = pd.read_csv(DATA_PATH.joinpath("political_preference_usa.csv"))
+df = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/final_structure_dashboard/datasets/political_preference_usa.csv')
 
 
 available_indicators = ['USA', 'UK','Denmark']
-df_uk = pd.read_csv(DATA_PATH.joinpath("political_pref_uk.csv"), delimiter=";")
+#df_uk = pd.read_csv(DATA_PATH.joinpath("political_pref_uk.csv"), delimiter=";")
+df_uk = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/final_structure_dashboard/datasets/political_pref_uk.csv', delimiter=";")
 uk_regions = json.load(open(DATA_PATH.joinpath('uk_regions.json')))
 #Creating ID to map coordinates of the UK
 df_infec_uk = df_uk.replace(["East of England"], "East") #In the coordinates it was called East. I can change this later if necessary

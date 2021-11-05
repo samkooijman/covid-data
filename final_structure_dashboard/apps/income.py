@@ -342,7 +342,8 @@ scatterplot6 = px.scatter(
         data_frame=dff3,
         x="income",
         y="vaccination_coverage",
-        hover_data=['region'],
+        hover_name='region',
+        hover_data=['region', 'p_value', 'error_rate'],
         text="region",
         height=550
 )
