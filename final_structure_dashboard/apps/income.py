@@ -102,8 +102,6 @@ def flatten_list (x):
     return flat_list
 
 
-
-
 def onlysunday(x):
     x = x[x['date'].dt.day_name() == 'Sunday']
     return x
