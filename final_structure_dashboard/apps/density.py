@@ -381,7 +381,7 @@ def getMarks(start, end, Nth=100):
 
 layout = html.Div(children=[
     html.Br(),
-    html.H1('Vaccination Rate USA'),
+    html.H1('Population density and infections per 100k people '),
     html.Div(
         [
             html.Label('From 2020 to 2021', id='time-range-label'),
@@ -434,7 +434,7 @@ def graph(date):
         data_frame=dff1,
         x="density",
         y="rolling_avg",
-        hover_data=['region'],
+        hover_data=['region', 'p_value', 'error_rate'],
         text="region",
         height=550
     )
@@ -446,7 +446,7 @@ def graph(date):
         data_frame=dff2,
         x="density",
         y="rolling_avg",
-        hover_data=['region'],
+        hover_data=['region', 'p_value', 'error_rate'],
         text="region",
         height=550
     )
@@ -458,7 +458,7 @@ def graph(date):
         data_frame=dff3,
         x="density",
         y="rolling_avg",
-        hover_data=['region'],
+        hover_data=['region', 'p_value', 'error_rate'],
         text="region",
         height=550
     )

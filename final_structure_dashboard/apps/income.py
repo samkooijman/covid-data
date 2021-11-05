@@ -351,9 +351,11 @@ scatterplot6 = px.scatter(
 scatterplot6.add_trace(go.Scatter (x=dff3['income'], y= dff3['coef'] * dff3["income"] + dff3["intersect"], mode="lines"))
 scatterplot6.update_traces(textposition='top center')
 
+
+
 layout = html.Div(children=[
     html.Br(),
-    html.H1('Vaccination Rate USA'),
+    html.H1('Income and vaccination percentage'),
     html.Div(
         [
             html.Label('From 2020 to 2021', id='time-range-label'),
@@ -405,7 +407,7 @@ def graph(date):
         data_frame=dff1,
         x="income",
         y="vaccination_coverage",
-        hover_data=['region'],
+        hover_data=['region', 'p_value', 'error_rate'],
         text="region",
         height=550
     )
@@ -417,7 +419,7 @@ def graph(date):
         data_frame=dff2,
         x="income",
         y="vaccination_coverage",
-        hover_data=['region'],
+        hover_data=['region', 'p_value', 'error_rate'],
         text="region",
         height=550
     )
