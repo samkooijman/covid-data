@@ -114,7 +114,7 @@ df = df[df.party == 'DEM']
 df = df.merge(df2, on='state')
 df = df.reset_index()
 df_uk['result'] = df_uk['lab']/df_uk['valid_votes'] *100
-avg_vaccination = 'Avarage vaccination covarage in country'
+avg_vaccination = 'Avarage vaccination coverage in country'
 
 layout = html.Div([
     html.Div([
@@ -145,10 +145,10 @@ def update_graph(xaxis_column_name):
             locations='state',
             scope="usa",
             color='total_votes',
-            color_continuous_scale='RdBu',
-            range_color=[0,100],
             hover_data=['total_votes', 'series_complete_pop_pct'],
-        ), 
+            color_continuous_scale='RdBu',
+            range_color=[0,100]
+        )
 
     elif xaxis_column_name == 'UK':
            return px.choropleth(
@@ -157,7 +157,7 @@ def update_graph(xaxis_column_name):
             color_continuous_scale='RdBu',
             geojson=uk_regions, #Conecting the coordinate file with the figure
             color="result",
-             hover_data=['region_name', 'result'],
+            hover_data=['region_name', 'result'],
             scope='europe').update_geos(fitbounds='locations', visible=False)
     else: 
        return px.choropleth(
@@ -165,7 +165,7 @@ def update_graph(xaxis_column_name):
                 locations='ons_region_id',
                 geojson=uk_regions,
                 color="green",
-                cope='europe').update_geos(fitbounds='locations', visible=False)
+                scope='europe').update_geos(fitbounds='locations', visible=False)
  
 
 
