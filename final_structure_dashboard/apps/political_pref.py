@@ -29,8 +29,10 @@ state_id_map = {}
 for feature in uk_regions["features"]:
     feature["id"] = feature["properties"]["objectid"]
     state_id_map[feature["properties"]["rgn19nm"]] = feature["id"]
-
-#df_uk['id'] = df_uk['region_name'].apply(lambda x: state_id_map[x])
+df_uk = df_uk.replace({
+  'Yorkshire and The Humber': 'Yorkshire and the Humber' 
+})
+df_uk['id'] = df_uk['region_name'].apply(lambda x: state_id_map[x])
 
 
 df = df.replace({
@@ -109,6 +111,7 @@ df = df.reset_index()
 df = df[df.party == 'DEM']
 df = df.merge(df2, on='state')
 df = df.reset_index()
+df_uk['result'] = df_uk['lab']/df_uk['valid_votes'] *100
 avg_vaccination = 'Avarage vaccination covarage in country'
 
 layout = html.Div([
@@ -143,13 +146,16 @@ def update_graph(xaxis_column_name):
             color_continuous_scale='RdBu',
             range_color=[0,100],
             hover_data=['total_votes', 'series_complete_pop_pct'],
-        )
+        ), 
+
     elif xaxis_column_name == 'UK':
            return px.choropleth(
             data_frame=df_uk,
-            locations='ons_id',
+            locations='id',
+            color_continuous_scale='RdBu',
             geojson=uk_regions, #Conecting the coordinate file with the figure
-            color="lab",
+            color="result",
+             hover_data=['region_name', 'result'],
             scope='europe').update_geos(fitbounds='locations', visible=False)
     else: 
        return px.choropleth(
