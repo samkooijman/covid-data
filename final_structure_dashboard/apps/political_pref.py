@@ -9,21 +9,24 @@ from geojson_rewind import rewind
 import plotly.express as px
 from app import app
 import pandas as pd
+import plotly.graph_objects as go
+
 
 
 PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../src").resolve()
+DATA_PATH = PATH.joinpath("../datasets").resolve()
 
 #Reading all the files
-df = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/final_structure_dashboard/datasets/political_preference_usa.csv')
-df_uk = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/final_structure_dashboard/datasets/political_pref_uk.csv', delimiter=";")
+df = pd.read_csv(DATA_PATH.joinpath("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_preference_usa.csv"))
+df_uk = pd.read_csv(DATA_PATH.joinpath("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_pref_uk.csv"), delimiter=";")
+df_denmark = pd.read_csv(DATA_PATH.joinpath("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_pref_denmark.csv"), delimiter=";")
 uk_regions = json.load(open(DATA_PATH.joinpath('uk_regions.json')))
-
-#indicating the countries
-available_indicators = ['USA', 'UK']
-
+denmark_regions = json.load(open(DATA_PATH.joinpath('denmark_regions.json')))
+available_indicators = ['USA', 'UK','Denmark']
 #Creating ID to map coordinates of the UK
 df_infec_uk = df_uk.replace(["East of England"], "East") #In the coordinates it was called East. I can change this later if necessary
+x = ['Product A', 'Product B', 'Product C']
+y = [20, 14, 23]
 
 #Creating ID to map coordinates of the UK
 state_id_map = {}
@@ -33,7 +36,9 @@ for feature in uk_regions["features"]:
 df_uk = df_uk.replace({
   'Yorkshire and The Humber': 'Yorkshire and the Humber' 
 })
+
 df_uk['id'] = df_uk['region_name'].apply(lambda x: state_id_map[x])
+#dont have approriate source to map denmark
 
 
 df = df.replace({
@@ -102,7 +107,13 @@ uk_regions = rewind(uk_regions, rfc7946=False)
 
 #dataprep
 df2 = pd.read_csv(DATA_PATH.joinpath("full_usa_vacc.csv"))
+df_infec_uk = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/code/full_uk_infec.csv')
+denmark_vac = pd.read_csv("https://raw.githubusercontent.com/samkooijman/covid-data/main/Regressions/Datasets/denmark_vac1.csv", delimiter=",")
+denmark_vac = denmark_vac.rename(columns={'municipality' : 'region', 'vacc_pct_municipality' : 'vaccination_coverage'})
+denmark_vac = denmark_vac[['region', 'vaccination_coverage']]
+#latest from static data
 df2 = df2[df2['date'] == '01/10/2021']
+df_infec_uk = df_infec_uk[df_infec_uk['date'] == '01/10/2021']
 #graduality based on republicans 
 df2['series_complete_pop_pct'] = df2['series_complete_pop_pct'].replace('', np.nan)
 df2 = df2.dropna(axis=0, subset=['series_complete_pop_pct'])
@@ -112,33 +123,54 @@ df = df.reset_index()
 df = df[df.party == 'DEM']
 df = df.merge(df2, on='state')
 df = df.reset_index()
-df_uk['result'] = df_uk['lab']/df_uk['valid_votes'] *100
-avg_vaccination = 'Average vaccination coverage in country'
+df_uk['result'] = df_uk['lab']/df_uk['valid_votes']
+total_votes_denmark = df_denmark['Number of people'].max() * 0.01
+df_denmark=df_denmark.loc[df_denmark['Political party'].isin(['A. The Social Democratic Party', 'B. The Danish Social-Liberal Party', 'C. The Conservative Peoples Party', 'D. The New Right', 'E. Klaus Riskær Pedersen'])]
+df_denmark['Number of people'] = (df_denmark['Number of people']/ total_votes_denmark) * 100
+# filter different party name based on country
+df_uk['result'].loc[(df_uk['region_name'] != 'Northern Ireland')] = df_uk['lab']/df_uk['valid_votes'] * 100
+df_uk['result'].loc[(df_uk['region_name'] == 'Northern Ireland')] = df_uk['dup']/df_uk['valid_votes'] * 100
+df_infec_uk = df_infec_uk.rename(columns={"areaname": "region_name"})
+df_uk = df_uk.merge(df_infec_uk, on='region_name')
+avg_number_denmark= ' '+ str(denmark_vac['vaccination_coverage'].median())
+avg_number_usa = ' ' + str(df2['series_complete_pop_pct'].median()) 
+avg_number_uk = ' ' + str(df_infec_uk['cases_per_100k'].median()) 
 
-layout = html.Div([
+layout = html.Div([ 
     html.Div([
         html.Div([
             dcc.Dropdown(
                 id='xaxis-column',
                 options=[{'label': i, 'value': i} for i in available_indicators],
-                value='UK'
+                value='Denmark'
             )
         ], style={'width': '48%', 'display': 'inline-block'}),
     ]),
-    html.H6(avg_vaccination),html.B(avg_number),
-    html.P("Gradual from 0% ( Republicans ) to 100% ( Democrats ) "),
+    html.Div([
+        html.Div([
+            dcc.Dropdown(
+                id='xaxis-column-2',
+                options=[{'label': i, 'value': i} for i in df_denmark['Region']],
+                value='1. GENTOFTE'
+            )
+        ], style={'width': '48%', 'display': 'inline-block'}),
+    ]),
+    html.H4(id='title', children=[]),
+    html.B(id='container', children=[]),
     dcc.Graph(id='indicator-graphic'),
 ])
 
-#Calling back the graphs
+
 @app.callback(
     Output('indicator-graphic', 'figure'),
-    Input('xaxis-column', 'value')
+    Output('container',component_property='children'),
+    Output('title',component_property='children'),
+    Input('xaxis-column', 'value'),
+    Input('xaxis-column-2', 'value')
     )
 
-
-#Creating the graphs
-def update_graph(xaxis_column_name):
+def update_graph(xaxis_column_name, region):
+    vaccination = denmark_vac[denmark_vac['region'].str.upper() == region[3:]]['vaccination_coverage']
     if xaxis_column_name == 'USA':
           return px.choropleth(
             data_frame=df,
@@ -146,28 +178,29 @@ def update_graph(xaxis_column_name):
             locations='state',
             scope="usa",
             color='total_votes',
-            hover_data=['total_votes', 'series_complete_pop_pct'],
             color_continuous_scale='RdBu',
-            range_color=[0,100]
-        )
+            range_color=[0,100],
+            hover_data=['total_votes', 'series_complete_pop_pct'],
+        ), "Gradual from 0% ( Republicans ) to 100% ( Democrats ) ",  "Avarage vaccination covarage in USA: " + avg_number_usa
 
     elif xaxis_column_name == 'UK':
-           return px.choropleth(
+          return  px.choropleth(
             data_frame=df_uk,
             locations='id',
             color_continuous_scale='RdBu',
             geojson=uk_regions, #Conecting the coordinate file with the figure
             color="result",
-            hover_data=['region_name', 'result'],
-            scope='europe').update_geos(fitbounds='locations', visible=False)
-    # else:
-    #    return px.choropleth(
-    #             df_infec_uk,
-    #             locations='ons_region_id',
-    #             geojson=uk_regions,
-    #             color="green",
-    #             scope='europe').update_geos(fitbounds='locations', visible=False)
- 
+            hover_data=['region_name', 'result', 'cases_per_100k'],
+            scope='europe').update_geos(fitbounds='locations', visible=False),"Gradual from 0% ( Centre-right ) to 100% ( Centre-left ) ",  "Avarage vaccination covarage in UK: " + avg_number_uk
+    else:
+      return px.bar(
+        data_frame=df_denmark[df_denmark['Region'] == region],
+        x="Political party", y="Number of people",
+         labels={'Number of people':'votes in %'},
+        color='Political party',
+        height=500
+        
+    ), vaccination,  "Avarage vaccination covarage in Denmark: " + avg_number_denmark
 
 if __name__ == '__main__':
     app.run_server(debug=True)
