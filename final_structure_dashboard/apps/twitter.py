@@ -1,54 +1,41 @@
-import calmap
-import calplot
+
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
+
 from dash import Dash, dcc, html, Input, Output
 
-import plotly.express as px
+
 import plotly.graph_objects as go
 
+#Reading the cleaned data
 df4 = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/Sentiment%20and%20Prediction/denmarksentimentframe.csv')
-
-x1 = df4.tweet_timestamp
-y1 = df4.fear
-y2 = df4.anger
-y3 = df4.happiness
-y4 = df4.sadness
-
-print(df4.head())
+df5 = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/Sentiment%20and%20Prediction/UKsentimentframe.csv')
 
 
-
-
-x1 = df4.tweet_timestamp
-y1 = df4.fear
-y2 = df4.anger
-y3 = df4.happiness
-y4 = df4.sadness
-
+#Creating the sentiment analysis plot for Denmark
 fig1 = go.Figure()
 fig1.add_trace(go.Scatter(x=df4.tweet_timestamp, y= df4.fear, mode='lines', name='Fear'))
 fig1.add_trace(go.Scatter(x=df4.tweet_timestamp, y= df4.anger, mode='lines', name='Anger'))
 fig1.add_trace(go.Scatter(x=df4.tweet_timestamp, y= df4.happiness, mode='lines', name='Happiness'))
-fig1.add_trace(go.Scatter(x=df4.tweet_timestamp, y= df4.sadness, mode='lines', name='Sadness'))
-
+fig1.add_trace(go.Scatter(x=df4.tweet_timestamp, y= df4.sadness, mode='lines', name='Sadness',))
 fig1.update_layout(xaxis_title='Date', yaxis_title='Sentiment score')
 
 
-figure(figsize=(12, 15), dpi=80)
-plt.plot(x1, y1)
-plt.plot(x1, y2)
-plt.plot(x1, y3)
-plt.plot(x1, y4)
-plt.legend(["fear ", "anger", "happiness", "sadness"])
+#Creating the sentiment analysis plot for the UK
+fig2 = go.Figure()
+fig2.add_trace(go.Scatter(x=df5.tweet_timestamp, y= df5.fear, mode='lines', name='Fear'))
+fig2.add_trace(go.Scatter(x=df5.tweet_timestamp, y= df5.anger, mode='lines', name='Anger'))
+fig2.add_trace(go.Scatter(x=df5.tweet_timestamp, y= df5.happiness, mode='lines', name='Happiness'))
+fig2.add_trace(go.Scatter(x=df5.tweet_timestamp, y= df5.sadness, mode='lines', name='Sadness',))
+fig2.update_layout(xaxis_title='Date', yaxis_title='Sentiment score')
 
-fig1.show()
-
+#Basic layout with the constructed graphs
 layout = html.Div(children=[
     html.Br(),
     html.H1('Twitter API Sentiment Analysis'),
 
     html.Hr(),
-            dcc.Graph(figure=fig1)
+            html.H3('Twitter API Sentiment Analysis of Denmark regarding the Covid-19 pandemic', style={'textAlign': 'center'}),
+            dcc.Graph(figure=fig1),
+            html.H3('Twitter API Sentiment Analysis of the UK regarding the Covid-19 pandemic', style={'textAlign': 'center'}),
+            dcc.Graph(figure=fig2)
 ])

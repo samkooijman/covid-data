@@ -1,54 +1,21 @@
-# Friso packages 
-from numpy.core.fromnumeric import std
-from numpy.core.numeric import roll
-import pandas as pd
-import numpy as np 
-
 import datetime
-import openpyxl
-from scipy import stats
-from pandas.core.window import rolling
-
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split  
-from sklearn import metrics
-
-import matplotlib.pyplot as plt
 from fuzzywuzzy import process
-
-# Sam packages
-from numpy.core.fromnumeric import std
-from numpy.core.numeric import roll
-import pandas as pd
-import numpy as np
-
-import dash
-import json
 import pandas as pd
 import numpy as np
 import plotly.express as px  
-from dash import Dash, dcc, html, Input, Output  
-import datetime as dt
+from dash import Dash, dcc, html, Input, Output
 from datetime import datetime
 import plotly.graph_objects as go
-import pathlib
-
 import time
-
-import openpyxl
 from scipy import stats
-from pandas.core.window import rolling
-
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split  
 from sklearn import metrics
-from sklearn.utils.extmath import density
 
-import matplotlib.pyplot as plt
 
 from app import app
 
-# Functions
+#Transposing function for the UK vaccination dataset
 def transpose(x):
     new = np.zeros(shape=(3,3))
     for date in x['date']:
@@ -59,6 +26,7 @@ def transpose(x):
     df = pd.DataFrame(data=new, columns=['region', 'vaccination_coverage', 'date'])
     return df.iloc[3:]
 
+#Linear regression set up function
 def linear_regression(x, y):
     x_ready = x.reshape((-1,1))
 
@@ -77,7 +45,9 @@ def linear_regression(x, y):
 
 
     return coef[0], regressor.intercept_, error, p_value
-     
+
+
+#Creating lists for the calculations
 def making_lists (a, b, c):
     coef = [] 
     intersect = []
@@ -93,7 +63,7 @@ def making_lists (a, b, c):
        Mean_Absolute_Error.append(z)
        p_value.append(v)
     return coef, intersect, Mean_Absolute_Error, p_value
-       
+
 def flatten_list (x):
     flat_list = []
     for sublist in x:
@@ -101,7 +71,7 @@ def flatten_list (x):
             flat_list.append(item)
     return flat_list
 
-
+#Only sundays will be regarded
 def onlysunday(x):
     x = x[x['date'].dt.day_name() == 'Sunday']
     return x
@@ -294,11 +264,10 @@ usa_income['p_value'] = d
 begin = uk_vac['date'].iloc[1]
 end = uk_vac['date'].iloc[-1]
 
-print(begin)
-print(end)
 
 daterange = pd.date_range(start=begin, end=end, freq='D', closed='right')
 
+#The slider cannot use the datetime64ns but has to use an integer (UNIX)
 def unixTimeMillis(dt):
     return int(time.mktime(dt.timetuple()))
 
@@ -315,7 +284,7 @@ def getMarks(start, end, Nth=100):
     return result
 
 
-
+#Doing the regression of Denmark
 x = denmark_income['income'].values
 y = denmark_income['vaccination_coverage'].values
 
@@ -340,23 +309,23 @@ scatterplot6 = px.scatter(
         data_frame=dff3,
         x="income",
         y="vaccination_coverage",
-        hover_name='region',
         hover_data=['region', 'p_value', 'error_rate'],
         text="region",
         height=550
 )
 
-scatterplot6.add_trace(go.Scatter (x=dff3['income'], y= dff3['coef'] * dff3["income"] + dff3["intersect"], mode="lines"))
+scatterplot6.add_trace(go.Scatter (x=dff3['income'], y= dff3['coef'] * dff3["income"] + dff3["intersect"], mode="lines", name='Regression Line'))
 scatterplot6.update_traces(textposition='top center')
+scatterplot6.update_layout(xaxis_title='Income', yaxis_title='Vaccination coverage')
 
 
-
+#Creating the layout with the slider
 layout = html.Div(children=[
     html.Br(),
     html.H1('Income and vaccination percentage'),
     html.Div(
         [
-            html.Label('From 2020 to 2021', id='time-range-label'),
+            html.Label('Date Slider', id='time-range-label'),
             dcc.Slider(
                 id='date_slider_income',
                 min = unixTimeMillis(daterange.min()),
@@ -370,37 +339,40 @@ layout = html.Div(children=[
         style={'margin-top': '20'}
     ),
     html.Hr(),
-            html.Div(id='output_container_income', children=[]),
+            html.H3(id='output_container_income', children=[]),
+            html.H4('Average income per region correlated with the vaccination coverage in the UK', style = {'textAlign': 'center'}),
             dcc.Graph(id='dff4', figure={}),
+            html.H4('Average income per region correlated with the vaccination coverage in the USA', style={'textAlign': 'center'}),
             dcc.Graph(id='dff5', figure={}),
+            html.H4('Average income per region correlated with the vaccination coverage in Denmark', style={'textAlign': 'center'}),
             dcc.Graph(figure=scatterplot6)
 ])
 
-uk_income['date'] = pd.to_datetime(uk_income['date'], format='%d-%m-%Y')
 
+#Transforming the data formats
+uk_income['date'] = pd.to_datetime(uk_income['date'], format='%d-%m-%Y')
 uk_income['date'] = pd.to_datetime(uk_income['date'], format='%d-%m-%Y').dt.strftime('%Y/%m/%d')
 usa_income['date'] = pd.to_datetime(usa_income['date'], format='%d-%m-%Y').dt.strftime('%Y/%m/%d')
-#denmark_income['date'] = pd.to_datetime(denmark_income['date'], format='%d-%m-%Y').dt.strftime('%Y/%m/%d')
 
+
+#Calling back the graphs + slider
 @app.callback(
     [Output(component_id='output_container_income', component_property='children'),
     Output(component_id='dff4', component_property='figure'),
     Output(component_id='dff5', component_property='figure')],
-    #Output(component_id='dff6', component_property='figure')],
     [Input(component_id='date_slider_income', component_property='value')]
 )
 
 
-# Linear regression UK and USA 
+#Creating the graphs
 def graph(date):
     date = (datetime.utcfromtimestamp(date).strftime('%Y/%m/%d'))
-    container3 = "The date chosen by user was: {}".format(date)
+    container3 = "The date chosen by user is: {}".format(date)
     dff1 = uk_income.copy()
     dff1 = dff1[dff1['date'] == date]
     dff2 = usa_income.copy()
     dff2 = dff2[dff2['date'] == date]
-    dff3 = denmark_income.copy()
-    
+
     scatterplot4 = px.scatter(
         data_frame=dff1,
         x="income",
@@ -410,8 +382,9 @@ def graph(date):
         height=550
     )
 
-    scatterplot4.add_trace(go.Scatter (x=dff1['income'], y= dff1["coef"] * dff1["income"] + dff1["intersect"], mode="lines"))
+    scatterplot4.add_trace(go.Scatter (x=dff1['income'], y= dff1["coef"] * dff1["income"] + dff1["intersect"], mode="lines", name='Regression Line'))
     scatterplot4.update_traces(textposition='top center')
+    scatterplot4.update_layout(xaxis_title='Income', yaxis_title='Vaccination coverage')
 
     scatterplot5 = px.scatter(
         data_frame=dff2,
@@ -422,22 +395,11 @@ def graph(date):
         height=550
     )
 
-    scatterplot5.add_trace(go.Scatter (x=dff2['income'], y= dff2["coef"] * dff2["income"] + dff2["intersect"], mode="lines"))
+    scatterplot5.add_trace(go.Scatter (x=dff2['income'], y= dff2["coef"] * dff2["income"] + dff2["intersect"], mode="lines", name="Regression Line"))
     scatterplot5.update_traces(textposition='top center')
+    scatterplot5.update_layout(xaxis_title='Income', yaxis_title='Vaccination coverage')
 
-    # scatterplot6 = px.scatter(
-    #     data_frame=dff3,
-    #     x="income",
-    #     y="vaccination_coverage",
-    #     hover_data=['region'],
-    #     text="region",
-    #     height=550
-    # )
-    #
-    # scatterplot6.add_trace(go.Scatter (x=dff3['income'], y= dff3["coef"] * dff3["income"] + dff3["intersect"], mode="lines"))
-    # scatterplot6.update_traces(textposition='top center')
-
-    return container3, scatterplot4, scatterplot5 #, scatterplot6
+    return container3, scatterplot4, scatterplot5
 
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -1,50 +1,16 @@
-# Friso packages 
-from numpy.core.fromnumeric import std
-from numpy.core.numeric import roll
-import pandas as pd
-import numpy as np 
 
 import datetime
-import openpyxl
-from scipy import stats
-from pandas.core.window import rolling
-
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split  
-from sklearn import metrics
-
-import matplotlib.pyplot as plt
-from fuzzywuzzy import process
-
-# Sam packages 
-from numpy.core.fromnumeric import std
-from numpy.core.numeric import roll
 import pandas as pd
-import numpy as np
-
-import dash
-import json
-import pandas as pd
-import numpy as np
-import plotly.express as px  
+import plotly.express as px
 from dash import Dash, dcc, html, Input, Output  
-import datetime as dt
 from datetime import datetime
 import plotly.graph_objects as go
-import pathlib
-
 import time
-
-import openpyxl
 from scipy import stats
-from pandas.core.window import rolling
 
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split  
 from sklearn import metrics
-from sklearn.utils.extmath import density
-
-import matplotlib.pyplot as plt
 
 from app import app
 
@@ -338,7 +304,6 @@ usa_density = onlysunday(usa_density)
 denmark_density = onlysunday(denmark_density)
 
 # Performing linear regression (results: coef, intersect, mean absolute error, p-value)
-
 a, b, c, d = making_lists(uk_density, 'density', 'rolling_avg')
 uk_density['coef'] = a
 uk_density['intersect'] = b
@@ -390,7 +355,7 @@ layout = html.Div(children=[
                 min = unixTimeMillis(daterange.min()),
                 max = unixTimeMillis(daterange.max()),
                 step = 86400 * 7, #days in unix time
-                value = unixTimeMillis(daterange.max()),
+                value = unixTimeMillis(daterange.min()),
                 marks=getMarks(daterange.min(),
                             daterange.max()),
             ),
@@ -398,9 +363,12 @@ layout = html.Div(children=[
         style={'margin-top': '20'}
     ),
     html.Hr(),
-            html.Div(id='output_container_density', children=[]),
+            html.H3(id='output_container_density', children=[]),
+            html.H4('Population density correlated with infections per 100k people in the UK', style = {'textAlign': 'center'}),
             dcc.Graph(id='dff1', figure={}),
+            html.H4('Population density correlated with infections per 100k people in the USA', style = {'textAlign': 'center'}),
             dcc.Graph(id='dff2', figure={}),
+            html.H4('Population density correlated with infections per 100k people in Denmark', style = {'textAlign': 'center'}),
             dcc.Graph(id='dff3', figure={})
 ])
 
@@ -422,7 +390,7 @@ denmark_density['date'] = pd.to_datetime(denmark_density['date'], format='%d-%m-
 # Linear regression UK and USA 
 def graph(date):
     date = (datetime.utcfromtimestamp(date).strftime('%Y/%m/%d'))
-    container2 = "The date chosen by user was: {}".format(date)
+    container2 = "The date chosen by user is: {}".format(date)
     dff1 = uk_density.copy()
     dff1 = dff1[dff1['date'] == date]
     dff2 = usa_density.copy()
@@ -439,8 +407,9 @@ def graph(date):
         height=550
     )
 
-    scatterplot1.add_trace(go.Scatter (x=dff1['density'], y= dff1["coef"] * dff1["density"] + dff1["intersect"], mode="lines"))
+    scatterplot1.add_trace(go.Scatter (x=dff1['density'], y= dff1["coef"] * dff1["density"] + dff1["intersect"], mode="lines", name="Regression Line"))
     scatterplot1.update_traces(textposition='top center')
+    scatterplot1.update_layout(xaxis_title='Density', yaxis_title='Rolling average of infections per 100k people')
 
     scatterplot2 = px.scatter(
         data_frame=dff2,
@@ -451,8 +420,9 @@ def graph(date):
         height=550
     )
 
-    scatterplot2.add_trace(go.Scatter (x=dff2['density'], y= dff2["coef"] * dff2["density"] + dff2["intersect"], mode="lines"))
+    scatterplot2.add_trace(go.Scatter (x=dff2['density'], y= dff2["coef"] * dff2["density"] + dff2["intersect"], mode="lines", name="Regression Line"))
     scatterplot2.update_traces(textposition='top center')
+    scatterplot2.update_layout(xaxis_title='Density', yaxis_title='Rolling average of infections per 100k people')
 
     scatterplot3 = px.scatter(
         data_frame=dff3,
@@ -463,8 +433,9 @@ def graph(date):
         height=550
     )
 
-    scatterplot3.add_trace(go.Scatter (x=dff3['density'], y= dff3["coef"] * dff3["density"] + dff3["intersect"], mode="lines"))
+    scatterplot3.add_trace(go.Scatter (x=dff3['density'], y= dff3["coef"] * dff3["density"] + dff3["intersect"], mode="lines", name="Regression Line"))
     scatterplot3.update_traces(textposition='top center')
+    scatterplot3.update_layout(xaxis_title='Density', yaxis_title='Rolling average of infections per 100k people')
 
     return container2, scatterplot1, scatterplot2, scatterplot3
 

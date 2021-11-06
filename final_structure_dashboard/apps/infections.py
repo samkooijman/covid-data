@@ -26,10 +26,10 @@ def transpose(x):
     return df.iloc[3:]
 
 PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../datasets").resolve()
+DATA_PATH = PATH.joinpath("../src").resolve()
 
 #Reading all the files
-df = pd.read_csv(DATA_PATH.joinpath("full_usa_vacc.csv"))
+df = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/code/full_usa_vacc.csv')
 df_infec_uk = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/code/full_uk_infec.csv')
 uk_regions = json.load(open(DATA_PATH.joinpath('uk_regions.json')))
 df_infec_uk = df_infec_uk.replace(["East of England"], "East") #In the coordinates it was called East. I can change this later if necessary
@@ -96,10 +96,10 @@ def getMarks(start, end, Nth=100):
 #Create the app-layout
 layout = html.Div(children=[
     html.Br(),
-    html.H1('Vaccination Rate USA'),
+    html.H1('Infection per 100k people'),
     html.Div(
         [
-            html.Label('From 2020 to 2021', id='time-range-label'),
+            html.Label('Date Slider', id='time-range-label'),
             dcc.Slider( #Create the slider
                 id='year_slider',
                 min = unixTimeMillis(daterange.min()),
@@ -117,10 +117,10 @@ layout = html.Div(children=[
     html.Hr(),
 
 
-            html.Div(id='output_container-1', children=[]),
-            html.H1('Infections per 100k people in the USA'),
+            html.H3(id='output_container-1', children=[]),
+            html.H4('Infections per 100k people in the USA', style = {'textAlign': 'center'}),
             dcc.Graph(id='infec_usa', figure={}),
-            html.H1('Infections per 100k people UK'),
+            html.H4('Infections per 100k people UK', style = {'textAlign': 'center'}),
             dcc.Graph(id='infec_uk', figure={})
 ])
 
@@ -132,11 +132,6 @@ layout = html.Div(children=[
      Output(component_id='infec_usa', component_property='figure'),
      Output(component_id='infec_uk', component_property='figure')],
     [Input(component_id='year_slider', component_property='value')])
-
-# def _update_time_range_label(year_range):
-#     return 'From {} to {}'.format(unixToDatetime(year_range[0]),
-#                                   unixToDatetime(year_range[1]))
-
 
 #Create the graph
 def update_graph(date):
@@ -150,9 +145,9 @@ def update_graph(date):
     dff_uk = dff_uk[dff_uk['date'] == date]
     dff_usa_infec = dff_usa_infec[dff_usa_infec['date'] == date]#Connect slider with UK Infec dataframe
 
-    container = "The date chosen by user was: {}".format(date)
+    container = "The date chosen by user is: {}".format(date)
 
-    #dff = dff[dff["Affected by"] == "series_complete_pop_pct"]
+
 
     # Plotly Express -- Create the graph
 
@@ -163,14 +158,14 @@ def update_graph(date):
         scope="usa",
         color='new_cases_per_100k',
         hover_data=['new_cases_per_100k'],
-        color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'Pct of Colonies Impacted': '% of Bee Colonies'},
+        color_continuous_scale='RdBu',
     )
 
     fig2 = px.choropleth(dff_uk,
                           locations='id',
                           geojson=uk_regions, #Conecting the coordinate file with the figure
                           color="cases_per_100k",
+                          hover_data=['areaname'],
                           scope='europe')
 
 
