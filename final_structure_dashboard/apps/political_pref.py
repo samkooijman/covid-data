@@ -17,9 +17,9 @@ PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../datasets").resolve()
 
 #Reading all the files
-df = pd.read_csv(DATA_PATH.joinpath("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_preference_usa.csv"))
-df_uk = pd.read_csv(DATA_PATH.joinpath("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_pref_uk.csv"), delimiter=";")
-df_denmark = pd.read_csv(DATA_PATH.joinpath("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_pref_denmark.csv"), delimiter=";")
+df = pd.read_csv("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_preference_usa.csv")
+df_uk = pd.read_csv("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_pref_uk.csv", delimiter=";")
+df_denmark = pd.read_csv("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_pref_denmark.csv", delimiter=";")
 uk_regions = json.load(open(DATA_PATH.joinpath('uk_regions.json')))
 denmark_regions = json.load(open(DATA_PATH.joinpath('denmark_regions.json')))
 available_indicators = ['USA', 'UK','Denmark']
