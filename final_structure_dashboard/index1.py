@@ -8,7 +8,9 @@ from app import app
 from app import server
 
 # Connect to your app pages
-from apps import appje, political_pref, income, density, twitter
+from apps import vaccination, political_pref, income, density, twitter, weatherapi, infections
+
+#Creating the Sidebar Style
 SIDEBAR_STYLE = {
     "position": "fixed",
     "top": 0,
@@ -26,6 +28,7 @@ CONTENT_STYLE = {
     "padding": "2rem 1rem",
 }
 
+#Creating the sidebar and connect it with every KPI
 sidebar = html.Div(
     [
         html.H2("COVID DATA", className="display-4"),
@@ -36,10 +39,18 @@ sidebar = html.Div(
         dbc.Nav(
             [
                 dbc.NavLink("Vaccination KPI", href='/apps/appje', active="exact"),
+                html.Br(),
+                dbc.NavLink("Infection KPI", href='/apps/infection', active="exact"),
+                html.Br(),
                 dbc.NavLink("Political KPI", href='/apps/political_pref', active="exact"),
-                dbc.NavLink("Density KPI", href='/apps/density', active="exact"),
+                html.Br(),
+                dbc.NavLink("Population Density KPI", href='/apps/density', active="exact"),
+                html.Br(),
                 dbc.NavLink("Income KPI", href='/apps/income', active="exact"),
+                html.Br(),
                 dbc.NavLink("Twitter Sentiment Analysis KPI", href='/apps/twitter', active="exact"),
+                html.Br(),
+                dbc.NavLink("Weather API KPI", href='/apps/weatherapi', active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -57,14 +68,16 @@ app.layout = html.Div([
     )
 ])
 
-
+#Callbacks for webpages
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 
-
+#Linking webpages to references and their python layout files
 def display_page(pathname):
     if pathname == '/apps/appje':
-        return appje.layout
+        return vaccination.layout
+    elif pathname == '/apps/infection':
+        return infections.layout
     elif pathname == '/apps/political_pref':
         return political_pref.layout
     elif pathname == '/apps/density':
@@ -73,6 +86,9 @@ def display_page(pathname):
         return income.layout
     elif pathname == '/apps/twitter':
         return twitter.layout
+
+    elif pathname == '/apps/weatherapi':
+        return weatherapi.layout
 
         
 
