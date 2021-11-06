@@ -3,6 +3,7 @@ This document describes the contents of the vaccination_covarage_uk file. The va
 
 Data sources:
 • Office for National Statistics UK
+https://coronavirus.data.gov.uk/api/v2/data?areaType=overview&metric=newPeopleVaccinatedCompleteByPublishDate&format=csv
 
 --------------------------------------------------
 General description:
