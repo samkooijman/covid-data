@@ -67,7 +67,7 @@ for feature in uk_regions["features"]:
 
 uk_vac['id'] = uk_vac['region'].apply(lambda x: state_id_map[x])
 
-print(uk_vac)
+
 
 #Some cure to the wounding geojson file. This is due to bad UK coordinates file.
 uk_regions = rewind(uk_regions, rfc7946=False)
@@ -85,8 +85,6 @@ df = df.sort_values(by='date', ascending=True)
 begin = "2020/12/27"
 
 end = df.iloc[-1, 1]
-
-print(end)
 
 #We need to play with this
 daterange = pd.date_range(start=begin, end=end, freq='D', closed='right')
@@ -143,8 +141,6 @@ layout = html.Div(children=[
             html.H4('Vaccination % in the UK per state' , style = {'textAlign': 'center'}),
             dcc.Graph(id='uk_vac', figure={})
 ])
-
-print(uk_vac['date'])
 
 #Calling back the inputs and the outputs. E.g. a graph is an output
 @app.callback(

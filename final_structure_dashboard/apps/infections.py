@@ -54,7 +54,6 @@ df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y').dt.strftime('%Y/%m/%d
 df_infec_uk['date'] = pd.to_datetime(df_infec_uk['date'], format='%d/%m/%Y').dt.strftime('%Y/%m/%d')
 df_infec_usa['date'] = pd.to_datetime(df_infec_usa['date'], format='%d/%m/%Y').dt.strftime('%Y/%m/%d')
 
-print(df_infec_usa.head())
 
 df['series_complete_pop_pct'] = df['series_complete_pop_pct'].replace('', np.nan)
 df = df.dropna(axis=0, subset=['series_complete_pop_pct'])
@@ -64,7 +63,7 @@ begin = df.iloc[1, 1]
 
 end = df.iloc[-1, 1]
 
-print(end)
+
 
 #We need to play with this
 daterange = pd.date_range(start='2021', end=end, freq='D', closed='right')
