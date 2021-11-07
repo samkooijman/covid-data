@@ -14,11 +14,11 @@ import plotly.graph_objects as go
 
 
 PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../datasets").resolve()
+DATA_PATH = PATH.joinpath("../src").resolve()
 
 #Reading all the files
-df = pd.read_csv("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_preference_usa.csv")
-df_uk = pd.read_csv("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_pref_uk.csv", delimiter=";")
+df = pd.read_csv("https://raw.githubusercontent.com/samkooijman/covid-data/main/final_structure_dashboard/src/political_preference_usa.csv")
+df_uk = pd.read_csv('https://raw.githubusercontent.com/samkooijman/covid-data/main/final_structure_dashboard/src/political_pref_uk.csv', delimiter=';')
 df_denmark = pd.read_csv("https://raw.githubusercontent.com/samkooijman/covid-data/main/code/political_pref_denmark.csv", delimiter=";")
 uk_regions = json.load(open(DATA_PATH.joinpath('uk_regions.json')))
 denmark_regions = json.load(open(DATA_PATH.joinpath('denmark_regions.json')))
@@ -181,7 +181,7 @@ def update_graph(xaxis_column_name, region):
             color_continuous_scale='RdBu',
             range_color=[0,100],
             hover_data=['total_votes', 'series_complete_pop_pct'],
-        ), "Gradual from 0% ( Republicans ) to 100% ( Democrats ) ",  "Avarage vaccination covarage in USA: " + avg_number_usa
+        ), "Gradual from 0% ( Republicans ) to 100% ( Democrats ) ",  "Average vaccination coverage in USA: " + avg_number_usa
 
     elif xaxis_column_name == 'UK':
           return  px.choropleth(
@@ -196,11 +196,11 @@ def update_graph(xaxis_column_name, region):
       return px.bar(
         data_frame=df_denmark[df_denmark['Region'] == region],
         x="Political party", y="Number of people",
-         labels={'Number of people':'votes in %'},
+        labels={'Number of people':'votes in %'},
         color='Political party',
         height=500
         
-    ), vaccination,  "Avarage vaccination covarage in Denmark: " + avg_number_denmark
+    ), vaccination,  "Average vaccination coverage in Denmark: " + avg_number_denmark
 
 if __name__ == '__main__':
     app.run_server(debug=True)
