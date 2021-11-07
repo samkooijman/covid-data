@@ -1,10 +1,12 @@
+version: "3.7"
 services:
-
-  dashboard:
-    build: .
-    container_name: dashboard_team12
-    command: python app.py
-    volumes:
-      - .:/src
+  app-name:
+    build:
+      context: .
+    image: covid:1.0.0
+    container_name: app-name
     ports:
       - "8080:8080"
+    environment:
+      - TARGET=LIVE
+    restart: unless-stopped

@@ -1,17 +1,8 @@
-FROM python:3
-
-RUN mkdir -p /usr/src/app
-
-WORKDIR /usr/src/app
-
-COPY requirements.txt /usr/src/app/
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . /usr/src/app
-COPY ./apps /usr/src/app/apps
-
-ENV PORT 8050
-
-EXPOSE $PORT
-
-CMD [ "python", "./index.py" ]
+FROM python:3.7
+WORKDIR /src
+COPY requirements.txt /
+RUN pip install -r /requirements.txt
+RUN pip3 install scikit-learn scipy matplotlib
+COPY ./ ./
+EXPOSE 8080
+CMD ["python", "./index1.py"]
